@@ -1,0 +1,139 @@
+Sub Stocks()
+
+' Declare Current as a worksheet object variable.
+Dim Current As Worksheet
+
+' Loop through all of the worksheets in the active workbook.
+For Each Current In Worksheets
+Worksheets(Current.Name).Activate
+    Range("J3:K10000").ClearContents
+    ' Set an initial variable for holding the stock name
+    Dim Stock_Name As String
+
+    ' Set an initial variable for holding the total per stock
+    Dim Stock_Total As Double
+    Stock_Total = 0
+  
+    Dim FinalRow As Long
+    FinalRow = Cells(Rows.Count, 1).End(xlUp).Row
+    ' Keep track of the location for each stock in the summary table
+    Dim Summary_Table_Row As Integer
+    Summary_Table_Row = 2
+  
+    'Yearly change values
+  
+    Dim StartDate As String
+    StartDate = "0101"
+    OpenValue = 0
+    'Percent Change
+    Dim Percent_Change As Double
+    Percent_Change = 0
+
+    ' Loop through all stock performance
+    For I = 2 To FinalRow
+
+        ' Check if we are still within the same stock name, if it is not...
+        If Cells(I + 1, 1).Value <> Cells(I, 1).Value Then
+
+        ' Set the stock name
+        Stock_Name = Cells(I, 1).Value
+     
+                If Right(Cells(I, 2).Value, 4) = StartDate Then
+            
+                OpenValue = Cells(I, 3).Value
+                Range("M" & Summary_Table_Row) = OpenValue
+                'Summary_Table_Row = Summary_Table_Row + 1
+                 End If
+
+        ' Add to the stock Total
+        Stock_Total = Stock_Total + Cells(I, 7).Value
+
+        ' Print the stock name in the Summary Table
+        Range("I" & Summary_Table_Row).Value = Stock_Name
+
+        ' Print the StockTotal to the Summary Table
+        Range("L" & Summary_Table_Row).Value = Stock_Total
+      
+      
+     
+        Range("N" & Summary_Table_Row) = Cells(I, 6)
+      
+     
+      
+      
+     
+                'Yearly_Value = Yearly_Value + (Cells(i, 6) - OpenValue)
+        'Print the Yearly_Value to the Summary Table
+        ' Range("J" & Summary_Table_Row).Value = Yearly_Value
+            
+         ' Print the Percent Change to the Summary Table
+       
+        ' Range("K" & Summary_Table_Row).Value = Percent_Change
+        Summary_Table_Row = Summary_Table_Row + 1
+        ' If the cell immediately following a row is the same stock...
+        'End If
+      
+        ' Reset the Stock Total
+        Stock_Total = 0
+      
+      
+     
+        Else
+
+        ' Add to the Brand Total
+        Stock_Total = Stock_Total + Cells(I, 7).Value
+      
+        If Right(Cells(I, 2).Value, 4) = StartDate Then
+            
+                OpenValue = Cells(I, 3).Value
+                Range("M" & Summary_Table_Row) = OpenValue
+                'Summary_Table_Row = Summary_Table_Row + 1
+                End If
+        End If
+        'Range("O" & Summary_Table_Row) = Cells(i, 6) - OpenValue
+    Next I
+  
+    
+        'Range("I291:N150000").ClearContents
+        target = Range("R1").Value + 1
+            
+     Range("J2:K2").Select
+        Selection.AutoFill Destination:=Range("J2:K" & target)
+        Range("J2:K290").Select
+        Range("O3").Select
+    
+  
+    Range("Q4").Value = WorksheetFunction.Max(Columns("L:L"))
+    Range("Q2").Value = WorksheetFunction.Max(Columns("K:K"))
+    Range("Q3").Value = WorksheetFunction.Min(Columns("K:K"))
+    
+    Columns("J:J").Select
+    Selection.FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, _
+        Formula1:="=0"
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .Color = 5287936
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).StopIfTrue = False
+    Selection.FormatConditions.Add Type:=xlCellValue, Operator:=xlLess, _
+        Formula1:="=0"
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1).Font
+        .Color = -16383844
+        .TintAndShade = 0
+    End With
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .Color = 13551615
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).StopIfTrue = False
+    Range("K12").Select
+    ActiveWorkbook.Save
+  
+  'MsgBox Current.Name
+ Next Current
+  
+End Sub
